@@ -2,6 +2,16 @@ import bpy
 import random
 from math import pi, cos, sin
 data_font =  bpy.data.fonts.load(filepath="//..\\..\\..\\..\\..\\Windows\\Fonts\\Gabriola.ttf")            
+green = bpy.data.materials["Verde"]
+default = bpy.data.materials["Default"]
+rojo = bpy.data.materials["Rojo"]
+
+
+class Rows:
+    def __init__(self, x_z):
+        self.value = random.random() * 10
+        bpy.ops.mesh.primitive_cube_add(location = (x_z, self.value, 0), scale = (.5, self.value, .5))
+        self.reference = bpy.context.object   
 
 class SimpleCube:
     
@@ -11,18 +21,6 @@ class SimpleCube:
         self.value = int(random.random() * 100)
         self.text = Text(self.value, self.reference)
         
-    """    
-    def translation_xz(self, radius, offset, limit_offset, left):
-        r = radius
-        self.reference.keyframe_insert(data_path="location", frame = offset)
-        grade = 0 if left else pi
-        for step in range(int(offset + (limit_offset / 4)), limit_offset + 1, int(limit_offset / 4)):
-            grade += (pi / 4)
-            location = self.get_location()
-            #print(f"Cos : {cos(grade) * radius}, Sin: {sin(grade) * radius}")
-            self.reference.location = (cos(grade) * radius, 0.0,(sin(grade) * radius) / 4)
-            self.reference.keyframe_insert(data_path="location", frame = step)
-    """
     def get_value(self):
         return self.value
     
@@ -46,17 +44,13 @@ def intercambie_position(cube_a, cube_b, offset):
     
     #Intercambiamos posicion x en ambos cubos
     set_keyframes_zx(cube_a, offset + step * 4, cube_a.reference.location.x , 0) 
-    set_keyframes_zx(cube_b, offset + step * 4, cube_b.reference.location.x , 0) 
+    set_keyframes_zx(cube_b, offset + step * 4, cube_b.reference.location.x , 0)
 
 def set_keyframes_zx(cube, step, location_x, location_y):
     cube.reference.location = (location_x, location_y, 0.0 )
     cube.reference.keyframe_insert(data_path="location", frame = step)
   
-"""
-def set_keyframes_zx(cube, step, grade, radius):
-    cube.reference.location = (cos(grade) * radius + radius , (sin(grade) * radius ), 0.0 )
-    cube.reference.keyframe_insert(data_path="location", frame = step)
-""" 
+
 def distance(cube_a, cube_b):
     x  = cube_b.reference.location.x - cube_a.reference.location.x 
     y  = cube_b.reference.location.y - cube_a.reference.location.y 
@@ -78,11 +72,15 @@ def set_parent(father, child):
     child.parent = father
       
 
+def transport(row_a, row_b):
+    pass
+
 def insertionSort(cube):
     N = len(cube)
     sum = 0
     offset = 0
     for x in range(1, N, 1):
+        cube[j].change_color(green)
         j = x
         while(j > 0 and cube[j].value < cube[j - 1].value):
             t = cube[j]
@@ -95,21 +93,6 @@ def insertionSort(cube):
     print(f"sum equals {sum}")
 
 
-"""
-def selectionSort(cube):
-    N = len(cube)
-    offset = 0
-    for x in range(N):
-        min = x
-        for j in range(x + 1, N):
-            if(cube[j].value < cube[min].value): 
-                min = j;
-        t = cube[x]
-        cube[x] = cube[min]
-        cube[min] = t
-        intercambie_position(cube[x], cube[min], offset)
-        offset += 60
-"""
 def selectionSort(cube):
     N = len(cube)
     offset = 0
@@ -136,23 +119,7 @@ def shellSort(cube):
                 j -= h
         h = int( h / 3 )
         
-"""
-   public static void sort(Comparable[] a)
-     { 
-        int N = a.length;
-        int h = 1;
-        while (h < N/3) h = 3*h + 1; // 1, 4, 13, 40, 121, 364, 1093, ...
-        while (h >= 1)
-        { // h-sort the array.
-            for (int i = h; i < N; i++)
-            { // Insert a[i] among a[i-h], a[i-2*h], a[i-3*h]... .
-                for (int j = i; j >= h && less(a[j], a[j-h]); j -= h)
-                    exch(a, j, j-h);
-            }
-        h = h/3;
-        }
-     }
-"""
+
 def exch(cube, i, j, offset):
     t = cube[j]
     cube[j] = cube[i]
@@ -161,9 +128,12 @@ def exch(cube, i, j, offset):
 
     
 if __name__ == '__main__':
-    cube = [SimpleCube(( x, 0, 0 )) for x in range(10)]
+    #cube = [SimpleCube(( x, 0, 0 )) for x in range(30)]
+    rows = [Rows(x) for x in range(20)]
+    for x in rows:
+        print(x.reference.data)
     #selectionSort(cube)
-    shellSort(cube)
+    #shellSort(cube)
     #print(lista) 
     #print(cubo[0].value)
     #cube_a = SimpleCube((-5 , 0, 0))
